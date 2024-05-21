@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\FilmRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FilmRepository::class)]
@@ -24,6 +26,40 @@ class Film
 
     #[ORM\Column(length: 255)]
     private ?string $synopsis = null;
+
+    /**
+     * @var Collection<int, Genre>
+     */
+    #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'films')]
+    private Collection $genres;
+
+    /**
+     * @var Collection<int, Pays>
+     */
+    #[ORM\ManyToMany(targetEntity: Pays::class, inversedBy: 'films')]
+    private Collection $pays;
+
+    /**
+     * @var Collection<int, Casting>
+     */
+    #[ORM\ManyToMany(targetEntity: Casting::class, inversedBy: 'filmsInterpretes')]
+    #[ORM\JoinTable('acteur_film')]
+    private Collection $acteurs;
+
+    /**
+     * @var Collection<int, Casting>
+     */
+    #[ORM\ManyToMany(targetEntity: Casting::class, inversedBy: 'filmsRealises')]
+    #[ORM\JoinTable('real_film')]
+    private Collection $realisateurs;
+
+    public function __construct()
+    {
+        $this->genres = new ArrayCollection();
+        $this->pays = new ArrayCollection();
+        $this->acteurs = new ArrayCollection();
+        $this->realisateurs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +110,102 @@ class Film
     public function setSynopsis(string $synopsis): static
     {
         $this->synopsis = $synopsis;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Genre>
+     */
+    public function getGenres(): Collection
+    {
+        return $this->genres;
+    }
+
+    public function addGenre(Genre $genre): static
+    {
+        if (!$this->genres->contains($genre)) {
+            $this->genres->add($genre);
+        }
+
+        return $this;
+    }
+
+    public function removeGenre(Genre $genre): static
+    {
+        $this->genres->removeElement($genre);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pays>
+     */
+    public function getPays(): Collection
+    {
+        return $this->pays;
+    }
+
+    public function addPay(Pays $pay): static
+    {
+        if (!$this->pays->contains($pay)) {
+            $this->pays->add($pay);
+        }
+
+        return $this;
+    }
+
+    public function removePay(Pays $pay): static
+    {
+        $this->pays->removeElement($pay);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Casting>
+     */
+    public function getActeurs(): Collection
+    {
+        return $this->acteurs;
+    }
+
+    public function addActeur(Casting $acteur): static
+    {
+        if (!$this->acteurs->contains($acteur)) {
+            $this->acteurs->add($acteur);
+        }
+
+        return $this;
+    }
+
+    public function removeActeur(Casting $acteur): static
+    {
+        $this->acteurs->removeElement($acteur);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Casting>
+     */
+    public function getRealisateurs(): Collection
+    {
+        return $this->realisateurs;
+    }
+
+    public function addRealisateur(Casting $realisateur): static
+    {
+        if (!$this->realisateurs->contains($realisateur)) {
+            $this->realisateurs->add($realisateur);
+        }
+
+        return $this;
+    }
+
+    public function removeRealisateur(Casting $realisateur): static
+    {
+        $this->realisateurs->removeElement($realisateur);
 
         return $this;
     }
